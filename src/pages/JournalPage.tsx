@@ -84,7 +84,7 @@ export function JournalPage() {
         )}
       </div>
 
-      <div className="border-t border-stone-200 pt-6 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-8">
+      <div className="max-w-[720px] border-t border-stone-200 pt-6 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-8">
         <JournalEntryPanel
           dateKey={selectedDateKey}
           entry={entry}

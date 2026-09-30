@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase/client'
 
 const NAV_ITEMS = [
@@ -8,8 +8,14 @@ const NAV_ITEMS = [
 ]
 
 export function AppLayout() {
+  // The Journal page hosts the rich-text editor and benefits from more
+  // horizontal room; every other route keeps the app's normal narrow shell.
+  const isJournalRoute = useLocation().pathname === '/'
+
   return (
-    <div className="mx-auto flex min-h-dvh max-w-2xl flex-col px-4">
+    <div
+      className={`mx-auto flex min-h-dvh flex-col px-4 ${isJournalRoute ? 'max-w-6xl' : 'max-w-2xl'}`}
+    >
       <header className="flex items-center justify-between border-b border-stone-200 py-5">
         <nav className="flex gap-1">
           {NAV_ITEMS.map((item) => (

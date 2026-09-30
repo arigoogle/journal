@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { JournalEntry } from '../../types'
 import { formatLongDate } from '../../utils/date'
 import { deleteEntry, saveEntry } from './api'
+import { toEditorContent } from './editor/content'
+import { JournalEditor } from './editor/JournalEditor'
 
 interface JournalEntryPanelProps {
   dateKey: string
@@ -12,6 +14,9 @@ interface JournalEntryPanelProps {
   onDeleted: () => void
 }
 
+const AUTOSAVE_DELAY_MS = 1500
+const SAVED_INDICATOR_MS = 2000
+
 export function JournalEntryPanel({
   dateKey,
   entry,
@@ -20,22 +25,41 @@ export function JournalEntryPanel({
   onSaved,
   onDeleted,
 }: JournalEntryPanelProps) {
+  const baselineHtml = useMemo(() => toEditorContent(entry?.content ?? ''), [entry])
+
   const [editing, setEditing] = useState(false)
-  const [draft, setDraft] = useState('')
-  const [saving, setSaving] = useState(false)
+  const [resetToken, setResetToken] = useState(0)
+  const [draftHtml, setDraftHtml] = useState(baselineHtml)
+  const [draftEmpty, setDraftEmpty] = useState(!baselineHtml)
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [saveError, setSaveError] = useState<string | null>(null)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
-  useEffect(() => {
-    setEditing(!entry)
-    setDraft(entry?.content ?? '')
-    setSaveError(null)
-    setConfirmingDelete(false)
-  }, [dateKey, entry])
+  const lastSavedHtmlRef = useRef(baselineHtml)
+  const savingRef = useRef(false)
+  const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const savedIndicatorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    const isDirty = editing && draft !== (entry?.content ?? '')
+    setEditing(!entry)
+    setDraftHtml(baselineHtml)
+    setDraftEmpty(!baselineHtml)
+    setSaveStatus('idle')
+    setSaveError(null)
+    setConfirmingDelete(false)
+    lastSavedHtmlRef.current = baselineHtml
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current)
+    if (savedIndicatorTimerRef.current) clearTimeout(savedIndicatorTimerRef.current)
+    // Keyed on entry?.id (stable across content updates from our own
+    // autosave) rather than the entry object itself — otherwise every
+    // autosave-triggered re-fetch would reset editing back to view mode
+    // mid-edit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateKey, entry?.id])
+
+  useEffect(() => {
+    const isDirty = editing && draftHtml !== lastSavedHtmlRef.current
     if (!isDirty) return
 
     const handler = (e: BeforeUnloadEvent) => {
@@ -43,7 +67,52 @@ export function JournalEntryPanel({
     }
     window.addEventListener('beforeunload', handler)
     return () => window.removeEventListener('beforeunload', handler)
-  }, [editing, draft, entry])
+  }, [editing, draftHtml])
+
+  async function performSave(html: string, { exitOnSuccess }: { exitOnSuccess: boolean }) {
+    if (savingRef.current) return
+    savingRef.current = true
+    setSaveStatus('saving')
+    setSaveError(null)
+    try {
+      const saved = await saveEntry(dateKey, html)
+      lastSavedHtmlRef.current = html
+      onSaved(saved)
+      setSaveStatus('saved')
+      if (savedIndicatorTimerRef.current) clearTimeout(savedIndicatorTimerRef.current)
+      savedIndicatorTimerRef.current = setTimeout(() => setSaveStatus('idle'), SAVED_INDICATOR_MS)
+      if (exitOnSuccess) setEditing(false)
+    } catch {
+      setSaveStatus('error')
+      setSaveError('Could not save your entry. Please try again.')
+    } finally {
+      savingRef.current = false
+    }
+  }
+
+  // Autosave: only for entries that already exist, so a few stray
+  // keystrokes on a blank day can't silently create a journal entry.
+  useEffect(() => {
+    if (!editing || !entry) return
+    if (draftHtml === lastSavedHtmlRef.current) return
+
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current)
+    autosaveTimerRef.current = setTimeout(() => {
+      performSave(draftHtml, { exitOnSuccess: false })
+    }, AUTOSAVE_DELAY_MS)
+
+    return () => {
+      if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draftHtml, editing, entry])
+
+  useEffect(() => {
+    return () => {
+      if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current)
+      if (savedIndicatorTimerRef.current) clearTimeout(savedIndicatorTimerRef.current)
+    }
+  }, [])
 
   if (loading) {
     return <p className="text-sm text-stone-400">Loading journal…</p>
@@ -53,19 +122,20 @@ export function JournalEntryPanel({
     return <p className="text-sm text-red-600">{error}</p>
   }
 
-  async function handleSave() {
-    if (saving || !draft.trim()) return
-    setSaving(true)
+  function handleSaveClick() {
+    if (draftEmpty) return
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current)
+    performSave(draftHtml, { exitOnSuccess: true })
+  }
+
+  function handleCancel() {
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current)
+    setDraftHtml(baselineHtml)
+    setDraftEmpty(!baselineHtml)
+    setSaveStatus('idle')
     setSaveError(null)
-    try {
-      const saved = await saveEntry(dateKey, draft.trim())
-      onSaved(saved)
-      setEditing(false)
-    } catch {
-      setSaveError('Could not save your entry. Please try again.')
-    } finally {
-      setSaving(false)
-    }
+    setEditing(false)
+    setResetToken((t) => t + 1)
   }
 
   async function handleDelete() {
@@ -86,45 +156,43 @@ export function JournalEntryPanel({
 
       {editing ? (
         <div>
-          <textarea
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="How was today?"
-            rows={8}
+          <JournalEditor
+            key={`edit-${dateKey}-${resetToken}`}
+            content={baselineHtml}
+            editable
             autoFocus
-            className="w-full resize-none rounded-md border border-stone-300 p-3 text-sm leading-relaxed text-stone-800 focus:border-stone-500 focus:outline-none"
+            placeholder="Write about your day…"
+            onChange={(html, isEmpty) => {
+              setDraftHtml(html)
+              setDraftEmpty(isEmpty)
+            }}
           />
 
           {saveError && <p className="mt-2 text-sm text-red-600">{saveError}</p>}
 
-          <div className="mt-3 flex items-center gap-2">
+          <div className="mt-3 flex items-center gap-3">
             <button
-              onClick={handleSave}
-              disabled={saving || !draft.trim()}
+              onClick={handleSaveClick}
+              disabled={saveStatus === 'saving' || draftEmpty}
               className="rounded-md bg-stone-900 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-stone-700 disabled:opacity-50"
             >
-              {saving ? 'Saving…' : 'Save'}
+              {saveStatus === 'saving' ? 'Saving…' : 'Save'}
             </button>
             {entry && (
               <button
-                onClick={() => {
-                  setDraft(entry.content)
-                  setEditing(false)
-                  setSaveError(null)
-                }}
-                disabled={saving}
+                onClick={handleCancel}
+                disabled={saveStatus === 'saving'}
                 className="rounded-md px-4 py-1.5 text-sm text-stone-500 hover:bg-stone-100"
               >
                 Cancel
               </button>
             )}
+            {saveStatus === 'saved' && <span className="text-xs text-stone-400">Saved</span>}
           </div>
         </div>
       ) : entry ? (
         <div>
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-stone-800">
-            {entry.content}
-          </p>
+          <JournalEditor content={baselineHtml} editable={false} />
 
           {saveError && <p className="mt-2 text-sm text-red-600">{saveError}</p>}
 
