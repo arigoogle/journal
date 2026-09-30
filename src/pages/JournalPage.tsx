@@ -1,14 +1,20 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Calendar } from '../features/journal/Calendar'
 import { fetchEntriesForMonth, fetchEntryByDate } from '../features/journal/api'
 import { JournalEntryPanel } from '../features/journal/JournalEntryPanel'
 import { MonthlyMomentum } from '../features/journal/MonthlyMomentum'
 import type { JournalEntry } from '../types'
-import { addMonths, todayKey } from '../utils/date'
+import { addMonths, fromDateKey, todayKey } from '../utils/date'
 
 export function JournalPage() {
-  const [monthDate, setMonthDate] = useState(() => new Date())
-  const [selectedDateKey, setSelectedDateKey] = useState(() => todayKey())
+  // Overview's calendar can deep-link here to a specific date.
+  const navDateKey = (useLocation().state as { dateKey?: string } | null)?.dateKey
+
+  const [monthDate, setMonthDate] = useState(() =>
+    navDateKey ? fromDateKey(navDateKey) : new Date(),
+  )
+  const [selectedDateKey, setSelectedDateKey] = useState(() => navDateKey ?? todayKey())
 
   const [monthEntries, setMonthEntries] = useState<JournalEntry[]>([])
   const [monthError, setMonthError] = useState<string | null>(null)

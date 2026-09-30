@@ -1,29 +1,31 @@
 import { useEffect, useState } from 'react'
-import {
-  fetchActivePursuitCount,
-  fetchCurrentStreak,
-  fetchJournalDatesForMonth,
-} from '../features/overview/api'
-import { addMonths, daysInMonth, formatMonthYear } from '../utils/date'
+import { Link, useNavigate } from 'react-router-dom'
+import { Calendar } from '../features/journal/Calendar'
+import { fetchCurrentStreak, fetchJournalDatesForMonth } from '../features/overview/api'
+import { fetchActivePursuits } from '../features/pursuits/api'
+import type { Pursuit } from '../types'
+import { addMonths, daysInMonth } from '../utils/date'
 
 export function OverviewPage() {
+  const navigate = useNavigate()
+
   const [monthDate, setMonthDate] = useState(() => new Date())
-  const [journaledDays, setJournaledDays] = useState<number | null>(null)
-  const [activeCount, setActiveCount] = useState<number | null>(null)
+  const [monthDates, setMonthDates] = useState<Set<string> | null>(null)
+  const [activePursuits, setActivePursuits] = useState<Pursuit[] | null>(null)
   const [streak, setStreak] = useState<number | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     setError(null)
-    setJournaledDays(null)
+    setMonthDates(null)
     fetchJournalDatesForMonth(monthDate)
-      .then((dates) => setJournaledDays(dates.size))
+      .then(setMonthDates)
       .catch(() => setError('Could not load your journal stats.'))
   }, [monthDate])
 
   useEffect(() => {
-    fetchActivePursuitCount()
-      .then(setActiveCount)
+    fetchActivePursuits()
+      .then(setActivePursuits)
       .catch(() => setError('Could not load your pursuits.'))
 
     fetchCurrentStreak()
@@ -34,32 +36,24 @@ export function OverviewPage() {
   }, [])
 
   const total = daysInMonth(monthDate)
+  const journaledDays = monthDates?.size ?? null
   const pct = journaledDays === null ? 0 : Math.round((journaledDays / total) * 100)
 
   return (
     <div className="max-w-md space-y-10">
       <div>
-        <div className="mb-2 flex items-center justify-between">
-          <button
-            onClick={() => setMonthDate((d) => addMonths(d, -1))}
-            aria-label="Previous month"
-            className="rounded-md px-2 py-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700"
-          >
-            &lt;
-          </button>
-          <h1 className="font-serif text-lg text-stone-900">{formatMonthYear(monthDate)}</h1>
-          <button
-            onClick={() => setMonthDate((d) => addMonths(d, 1))}
-            aria-label="Next month"
-            className="rounded-md px-2 py-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700"
-          >
-            &gt;
-          </button>
-        </div>
+        <Calendar
+          monthDate={monthDate}
+          selectedDateKey=""
+          datesWithEntries={monthDates ?? new Set()}
+          onSelectDate={(dateKey) => navigate('/', { state: { dateKey } })}
+          onPrevMonth={() => setMonthDate((d) => addMonths(d, -1))}
+          onNextMonth={() => setMonthDate((d) => addMonths(d, 1))}
+        />
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
-        <p className="mb-1 text-sm text-stone-500">Journal</p>
+        <p className="mt-6 mb-1 text-sm text-stone-500">Journal</p>
 
         {journaledDays === null ? (
           <p className="text-sm text-stone-400">Loading…</p>
@@ -78,18 +72,30 @@ export function OverviewPage() {
         )}
 
         {streak !== null && streak > 0 && (
-          <p className="mt-3 text-sm text-stone-400">
-            {streak}-day journaling streak
-          </p>
+          <p className="mt-3 text-sm text-stone-400">{streak}-day journaling streak</p>
         )}
       </div>
 
       <div>
         <p className="mb-1 text-sm text-stone-500">Current Pursuits</p>
-        {activeCount === null ? (
+
+        {activePursuits === null ? (
           <p className="text-sm text-stone-400">Loading…</p>
+        ) : activePursuits.length === 0 ? (
+          <p className="text-sm text-stone-400">No active pursuits.</p>
         ) : (
-          <p className="text-sm text-stone-800">{activeCount} active</p>
+          <ul className="space-y-1.5">
+            {activePursuits.map((p) => (
+              <li key={p.id}>
+                <Link
+                  to={`/pursuits/${p.id}`}
+                  className="text-sm text-stone-800 hover:text-stone-500"
+                >
+                  {p.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </div>

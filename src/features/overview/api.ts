@@ -21,16 +21,6 @@ export async function fetchJournalDatesForMonth(monthDate: Date): Promise<Set<st
   return new Set((data ?? []).map((row) => row.date))
 }
 
-export async function fetchActivePursuitCount(): Promise<number> {
-  const { count, error } = await supabase
-    .from('pursuits')
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'ACTIVE')
-
-  if (error) wrap('Could not load active pursuits.')
-  return count ?? 0
-}
-
 /** Consecutive days with a journal entry, ending today or yesterday. */
 export async function fetchCurrentStreak(): Promise<number> {
   const { data, error } = await supabase
