@@ -38,7 +38,7 @@ export function PursuitsPage() {
         <div className="flex gap-1">
           <button
             onClick={() => setTab('current')}
-            className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
+            className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
               tab === 'current' ? 'bg-stone-900 text-white' : 'text-stone-500 hover:bg-stone-100'
             }`}
           >
@@ -46,7 +46,7 @@ export function PursuitsPage() {
           </button>
           <button
             onClick={() => setTab('history')}
-            className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
+            className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
               tab === 'history' ? 'bg-stone-900 text-white' : 'text-stone-500 hover:bg-stone-100'
             }`}
           >
@@ -56,7 +56,7 @@ export function PursuitsPage() {
 
         <button
           onClick={() => setShowNewForm(true)}
-          className="rounded-md bg-stone-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-stone-700"
+          className="rounded-md bg-stone-900 px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
         >
           New Pursuit
         </button>
@@ -91,7 +91,7 @@ export function PursuitsPage() {
               <button
                 key={f}
                 onClick={() => setHistoryFilter(f)}
-                className={`rounded-md px-2.5 py-1 text-xs transition-colors ${
+                className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
                   historyFilter === f
                     ? 'bg-stone-900 text-white'
                     : 'text-stone-500 hover:bg-stone-100'

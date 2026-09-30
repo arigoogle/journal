@@ -7,9 +7,9 @@ export function PursuitCard({ pursuit }: { pursuit: Pursuit }) {
   return (
     <Link
       to={`/pursuits/${pursuit.id}`}
-      className="block rounded-lg border border-stone-200 p-4 transition-colors hover:border-stone-300 hover:bg-stone-50"
+      className="block rounded-lg border border-stone-200 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02),0_4px_12px_rgba(26,26,26,0.03)] transition-colors hover:border-stone-300"
     >
-      <h3 className="font-serif text-base text-stone-900">{pursuit.title}</h3>
+      <h3 className="font-serif text-lg text-stone-900">{pursuit.title}</h3>
 
       {pursuit.description && (
         <p className="mt-1 line-clamp-2 text-sm text-stone-500">{pursuit.description}</p>

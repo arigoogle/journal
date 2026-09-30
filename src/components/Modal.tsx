@@ -10,7 +10,7 @@ export function Modal({ title, onClose, children }: ModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/20 sm:items-center">
       <div
-        className="w-full max-w-md rounded-t-xl bg-white p-5 shadow-lg sm:rounded-xl"
+        className="w-full max-w-md rounded-t-lg border border-stone-200 bg-white p-5 shadow-[0_8px_24px_rgba(0,0,0,0.12)] sm:rounded-lg"
         role="dialog"
         aria-modal="true"
         aria-label={title}

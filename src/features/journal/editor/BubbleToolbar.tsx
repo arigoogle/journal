@@ -17,7 +17,7 @@ function ToolbarButton({
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
       className={`flex h-7 min-w-7 items-center justify-center rounded px-1.5 text-xs font-medium transition-colors ${
-        active ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100'
+        active ? 'bg-white text-stone-900' : 'text-stone-300 hover:bg-white/10 hover:text-white'
       }`}
     >
       {label}
@@ -56,7 +56,7 @@ export function BubbleToolbar({ editor }: { editor: Editor }) {
   return (
     <BubbleMenu
       editor={editor}
-      className="flex items-center gap-0.5 rounded-lg border border-stone-200 bg-white p-1 shadow-lg"
+      className="flex items-center gap-0.5 rounded-md bg-stone-900 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
     >
       {linkMode ? (
         <input
@@ -74,7 +74,7 @@ export function BubbleToolbar({ editor }: { editor: Editor }) {
             }
           }}
           placeholder="Paste a link…"
-          className="h-7 w-40 rounded px-2 text-xs text-stone-800 focus:outline-none"
+          className="h-7 w-40 rounded bg-white/10 px-2 text-xs text-white placeholder-stone-400 focus:outline-none"
         />
       ) : (
         <>
@@ -98,7 +98,7 @@ export function BubbleToolbar({ editor }: { editor: Editor }) {
             active={editor.isActive('strike')}
             onClick={() => editor.chain().focus().toggleStrike().run()}
           />
-          <span className="mx-0.5 h-4 w-px bg-stone-200" />
+          <span className="mx-0.5 h-4 w-px bg-stone-700" />
           <ToolbarButton
             label="H1"
             active={editor.isActive('heading', { level: 1 })}
@@ -109,7 +109,7 @@ export function BubbleToolbar({ editor }: { editor: Editor }) {
             active={editor.isActive('heading', { level: 2 })}
             onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
           />
-          <span className="mx-0.5 h-4 w-px bg-stone-200" />
+          <span className="mx-0.5 h-4 w-px bg-stone-700" />
           <ToolbarButton
             label="•"
             active={editor.isActive('bulletList')}

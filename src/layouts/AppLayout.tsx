@@ -24,7 +24,7 @@ export function AppLayout() {
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
-                `rounded-md px-3 py-1.5 text-sm transition-colors ${
+                `rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
                   isActive
                     ? 'bg-stone-900 text-white'
                     : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900'

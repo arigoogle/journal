@@ -68,7 +68,7 @@ export function OverviewPage() {
             <p className="mb-2 text-sm text-stone-800">
               {journaledDays} / {total} days
             </p>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-stone-100">
+            <div className="h-1 w-full overflow-hidden rounded-full bg-stone-100">
               <div
                 className="h-full rounded-full bg-stone-900 transition-[width]"
                 style={{ width: `${pct}%` }}

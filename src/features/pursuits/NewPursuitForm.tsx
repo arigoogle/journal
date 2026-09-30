@@ -84,7 +84,7 @@ export function NewPursuitForm({ onClose, onCreated }: NewPursuitFormProps) {
           <button
             type="submit"
             disabled={submitting || !title.trim()}
-            className="rounded-md bg-stone-900 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:bg-stone-700 disabled:opacity-50"
+            className="rounded-md bg-stone-900 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
           >
             {submitting ? 'Creating…' : 'Create'}
           </button>

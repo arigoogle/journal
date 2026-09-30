@@ -44,7 +44,10 @@ export function Calendar({
 
       <div className="grid grid-cols-7 gap-y-1 text-center">
         {WEEKDAY_LABELS.map((label) => (
-          <div key={label} className="pb-2 text-xs font-medium text-stone-400">
+          <div
+            key={label}
+            className="pb-2 text-xs font-medium tracking-wide text-stone-400 uppercase"
+          >
             {label}
           </div>
         ))}
@@ -60,9 +63,9 @@ export function Calendar({
             <button
               key={dateKey}
               onClick={() => onSelectDate(dateKey)}
-              className={`relative mx-auto flex h-10 w-10 flex-col items-center justify-center rounded-full text-sm transition-colors sm:h-11 sm:w-11 ${
+              className={`relative mx-auto flex size-9 flex-col items-center justify-center rounded-full text-sm transition-colors sm:size-10 ${
                 !inMonth ? 'text-stone-300' : 'text-stone-700'
-              } ${isSelected ? 'bg-stone-900 text-white' : isToday ? 'ring-1 ring-stone-400' : 'hover:bg-stone-100'}`}
+              } ${isSelected ? 'bg-stone-900 text-white' : isToday ? 'ring-1 ring-stone-900' : 'hover:bg-stone-100'}`}
             >
               {date.getDate()}
               {hasEntry && (

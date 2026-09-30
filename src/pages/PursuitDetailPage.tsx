@@ -64,7 +64,7 @@ export function PursuitDetailPage() {
       <div className="mt-6 flex items-center gap-2">
         <button
           onClick={() => setShowStatusForm(true)}
-          className="rounded-md bg-stone-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-stone-700"
+          className="rounded-md bg-stone-900 px-4 py-1.5 text-sm font-medium text-white hover:opacity-90"
         >
           Update Status
         </button>

@@ -1,7 +1,8 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --font-serif: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
 html,
@@ -11,14 +12,14 @@ body,
 }
 
 body {
-  @apply bg-stone-50 text-stone-900 antialiased;
+  @apply bg-stone-50 font-sans text-stone-900 antialiased;
 }
 
 /* Journal writing surface — comfortable long-form typography. */
 .journal-prose {
   font-family: var(--font-serif);
-  font-size: 1.125rem;
-  line-height: 1.8;
+  font-size: 1.1875rem;
+  line-height: 1.7;
   color: var(--color-stone-800);
 }
 
@@ -107,4 +108,5 @@ body {
   height: 0;
   pointer-events: none;
   color: var(--color-stone-400);
+  font-style: italic;
 }

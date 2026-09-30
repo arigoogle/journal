@@ -45,14 +45,14 @@ export const SlashCommandList = forwardRef<SlashCommandListHandle, SlashCommandL
 
     if (items.length === 0) {
       return (
-        <div className="rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-400 shadow-lg">
+        <div className="rounded-md bg-stone-900 px-3 py-2 text-sm text-stone-400 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
           No matches
         </div>
       )
     }
 
     return (
-      <div className="w-56 overflow-hidden rounded-lg border border-stone-200 bg-white py-1 shadow-lg">
+      <div className="w-56 overflow-hidden rounded-md bg-stone-900 py-1 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
         {items.map((item, index) => (
           <button
             key={item.title}
@@ -60,10 +60,10 @@ export const SlashCommandList = forwardRef<SlashCommandListHandle, SlashCommandL
             onClick={() => command(item)}
             onMouseEnter={() => setSelectedIndex(index)}
             className={`flex w-full items-center gap-3 px-3 py-1.5 text-left text-sm transition-colors ${
-              index === selectedIndex ? 'bg-stone-100 text-stone-900' : 'text-stone-600'
+              index === selectedIndex ? 'bg-white/10 text-white' : 'text-stone-300'
             }`}
           >
-            <span className="w-7 shrink-0 text-center text-xs font-medium text-stone-400">
+            <span className="w-7 shrink-0 text-center text-xs font-medium text-stone-500">
               {item.glyph}
             </span>
             {item.title}
