@@ -41,6 +41,7 @@ export interface Database {
           status: PursuitStatusEnum
           started_at: string
           ended_at: string | null
+          deadline_at: string | null
           created_at: string
           updated_at: string
         }
@@ -51,6 +52,7 @@ export interface Database {
           status?: PursuitStatusEnum
           started_at?: string
           ended_at?: string | null
+          deadline_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -61,6 +63,7 @@ export interface Database {
           status?: PursuitStatusEnum
           started_at?: string
           ended_at?: string | null
+          deadline_at?: string | null
           created_at?: string
           updated_at?: string
         }

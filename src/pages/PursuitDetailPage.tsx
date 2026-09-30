@@ -46,6 +46,13 @@ export function PursuitDetailPage() {
           <dd className="text-stone-800">{formatLongDate(pursuit.started_at)}</dd>
         </div>
 
+        {pursuit.deadline_at && (
+          <div>
+            <dt className="text-stone-400">Deadline</dt>
+            <dd className="text-stone-800">{formatLongDate(pursuit.deadline_at)}</dd>
+          </div>
+        )}
+
         {pursuit.description && (
           <div>
             <dt className="text-stone-400">Description</dt>

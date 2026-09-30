@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Calendar } from '../features/journal/Calendar'
 import { fetchEntriesForMonth, fetchEntryByDate } from '../features/journal/api'
 import { JournalEntryPanel } from '../features/journal/JournalEntryPanel'
+import { MonthlyMomentum } from '../features/journal/MonthlyMomentum'
 import type { JournalEntry } from '../types'
 import { addMonths, todayKey } from '../utils/date'
 
@@ -73,14 +74,19 @@ export function JournalPage() {
         {monthError ? (
           <p className="text-sm text-red-600">{monthError}</p>
         ) : (
-          <Calendar
-            monthDate={monthDate}
-            selectedDateKey={selectedDateKey}
-            datesWithEntries={datesWithEntries}
-            onSelectDate={setSelectedDateKey}
-            onPrevMonth={() => setMonthDate((d) => addMonths(d, -1))}
-            onNextMonth={() => setMonthDate((d) => addMonths(d, 1))}
-          />
+          <>
+            <Calendar
+              monthDate={monthDate}
+              selectedDateKey={selectedDateKey}
+              datesWithEntries={datesWithEntries}
+              onSelectDate={setSelectedDateKey}
+              onPrevMonth={() => setMonthDate((d) => addMonths(d, -1))}
+              onNextMonth={() => setMonthDate((d) => addMonths(d, 1))}
+            />
+            <div className="mt-6">
+              <MonthlyMomentum monthDate={monthDate} entryCount={monthEntries.length} />
+            </div>
+          </>
         )}
       </div>
 

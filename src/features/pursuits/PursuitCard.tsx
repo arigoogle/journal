@@ -23,6 +23,10 @@ export function PursuitCard({ pursuit }: { pursuit: Pursuit }) {
         </span>
         <StatusBadge status={pursuit.status} />
       </div>
+
+      {pursuit.status === 'ACTIVE' && pursuit.deadline_at && (
+        <p className="mt-1 text-xs text-stone-400">Due {formatLongDate(pursuit.deadline_at)}</p>
+      )}
     </Link>
   )
 }

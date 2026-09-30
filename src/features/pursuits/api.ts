@@ -55,6 +55,7 @@ export async function createPursuit(input: {
   title: string
   description: string
   startedAt: string
+  deadlineAt: string | null
 }): Promise<Pursuit> {
   const { data: pursuit, error } = await supabase
     .from('pursuits')
@@ -62,6 +63,7 @@ export async function createPursuit(input: {
       title: input.title,
       description: input.description || null,
       started_at: input.startedAt,
+      deadline_at: input.deadlineAt,
       status: 'ACTIVE',
     })
     .select('*')
@@ -80,11 +82,15 @@ export async function createPursuit(input: {
 
 export async function updatePursuitDetails(
   id: string,
-  input: { title: string; description: string },
+  input: { title: string; description: string; deadlineAt: string | null },
 ): Promise<Pursuit> {
   const { data, error } = await supabase
     .from('pursuits')
-    .update({ title: input.title, description: input.description || null })
+    .update({
+      title: input.title,
+      description: input.description || null,
+      deadline_at: input.deadlineAt,
+    })
     .eq('id', id)
     .select('*')
     .single()

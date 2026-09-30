@@ -12,6 +12,7 @@ interface EditPursuitFormProps {
 export function EditPursuitForm({ pursuit, onClose, onSaved }: EditPursuitFormProps) {
   const [title, setTitle] = useState(pursuit.title)
   const [description, setDescription] = useState(pursuit.description ?? '')
+  const [deadlineAt, setDeadlineAt] = useState(pursuit.deadline_at ?? '')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -25,6 +26,7 @@ export function EditPursuitForm({ pursuit, onClose, onSaved }: EditPursuitFormPr
       const saved = await updatePursuitDetails(pursuit.id, {
         title: title.trim(),
         description,
+        deadlineAt: deadlineAt || null,
       })
       onSaved(saved)
     } catch {
@@ -61,6 +63,20 @@ export function EditPursuitForm({ pursuit, onClose, onSaved }: EditPursuitFormPr
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full resize-none rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-stone-500 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="edit-deadline-at" className="mb-1 block text-sm text-stone-600">
+            Deadline
+          </label>
+          <input
+            id="edit-deadline-at"
+            type="date"
+            min={pursuit.started_at}
+            value={deadlineAt}
+            onChange={(e) => setDeadlineAt(e.target.value)}
+            className="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-stone-500 focus:outline-none"
           />
         </div>
 
