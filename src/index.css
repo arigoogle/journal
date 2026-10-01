@@ -91,6 +91,13 @@ body {
   margin: 2em 0;
 }
 
+.journal-prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  display: block;
+}
+
 .journal-prose a {
   color: var(--color-stone-900);
   text-decoration: underline;

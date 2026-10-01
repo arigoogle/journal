@@ -1,4 +1,5 @@
 import type { Editor, Range } from '@tiptap/core'
+import { hasImage, insertImageViaFilePicker } from './imageUpload'
 
 export interface SlashItem {
   title: string
@@ -55,10 +56,20 @@ export const SLASH_ITEMS: SlashItem[] = [
     command: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).setHorizontalRule().run(),
   },
+  {
+    title: 'Image',
+    glyph: '🖼',
+    command: ({ editor, range }) => insertImageViaFilePicker(editor, range),
+  },
 ]
 
-export function filterSlashItems(query: string): SlashItem[] {
+/** Only one image per entry — hide the item once the doc already has one. */
+export function filterSlashItems(query: string, editor: Editor): SlashItem[] {
   const q = query.toLowerCase().trim()
-  if (!q) return SLASH_ITEMS
-  return SLASH_ITEMS.filter((item) => item.title.toLowerCase().includes(q))
+  const items = hasImage(editor)
+    ? SLASH_ITEMS.filter((item) => item.title !== 'Image')
+    : SLASH_ITEMS
+
+  if (!q) return items
+  return items.filter((item) => item.title.toLowerCase().includes(q))
 }

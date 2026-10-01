@@ -12,7 +12,7 @@ export const SlashCommand = Extension.create({
       Suggestion<SlashItem, SlashItem>({
         editor: this.editor,
         char: '/',
-        items: ({ query }) => filterSlashItems(query),
+        items: ({ query, editor }) => filterSlashItems(query, editor),
         command: ({ editor, range, props }) => {
           props.command({ editor, range })
         },
