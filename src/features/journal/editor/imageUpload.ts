@@ -6,13 +6,59 @@ const MAX_SIZE_BYTES = 8 * 1024 * 1024
 const CLEANUP_TIMEOUT_MS = 60_000
 const PLACEHOLDER_TEXT = 'Uploading image…'
 
-async function uploadToCloudinary(file: File): Promise<string> {
-  if (!file.type.startsWith('image/')) {
+const COMPRESS_THRESHOLD_BYTES = 1 * 1024 * 1024
+const MAX_DIMENSION = 1920
+const JPEG_QUALITY = 0.82
+
+/**
+ * Downscales and re-encodes large images (phone photos are routinely
+ * 3000px+ and several MB) to a JPEG capped at MAX_DIMENSION on the long
+ * edge, so uploads are fast and Cloudinary storage stays small. Small
+ * files are left untouched. Falls back to the original file on any
+ * decoding failure — compression is a nice-to-have, never a blocker.
+ */
+async function compressImage(file: File): Promise<File> {
+  if (file.size <= COMPRESS_THRESHOLD_BYTES) return file
+
+  try {
+    const bitmap = await createImageBitmap(file)
+    const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height))
+    const width = Math.round(bitmap.width * scale)
+    const height = Math.round(bitmap.height * scale)
+
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    const ctx = canvas.getContext('2d')
+    if (!ctx) {
+      bitmap.close()
+      return file
+    }
+
+    ctx.drawImage(bitmap, 0, 0, width, height)
+    bitmap.close()
+
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY),
+    )
+    if (!blob || blob.size >= file.size) return file
+
+    const newName = file.name.replace(/\.\w+$/, '') + '.jpg'
+    return new File([blob], newName, { type: 'image/jpeg' })
+  } catch {
+    return file
+  }
+}
+
+async function uploadToCloudinary(original: File): Promise<string> {
+  if (!original.type.startsWith('image/')) {
     throw new ImageUploadError('Please choose an image file.')
   }
-  if (file.size > MAX_SIZE_BYTES) {
+  if (original.size > MAX_SIZE_BYTES) {
     throw new ImageUploadError('Image is too large (max 8MB).')
   }
+
+  const file = await compressImage(original)
 
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
   const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
