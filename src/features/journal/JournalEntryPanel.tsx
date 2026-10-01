@@ -4,6 +4,8 @@ import { formatLongDate } from '../../utils/date'
 import { deleteEntry, saveEntry } from './api'
 import { toEditorContent } from './editor/content'
 import { JournalEditor } from './editor/JournalEditor'
+import { getCurrentLocation, mapUrl } from './geolocation'
+import { countWords, estimateReadingMinutes } from './wordCount'
 
 interface JournalEntryPanelProps {
   dateKey: string
@@ -75,7 +77,10 @@ export function JournalEntryPanel({
     setSaveStatus('saving')
     setSaveError(null)
     try {
-      const saved = await saveEntry(dateKey, html)
+      // Only attempt to capture location on the save that first creates the
+      // entry — never re-requested or overwritten on later edits.
+      const location = entry ? undefined : await getCurrentLocation()
+      const saved = await saveEntry(dateKey, html, location)
       lastSavedHtmlRef.current = html
       onSaved(saved)
       setSaveStatus('saved')
@@ -150,9 +155,34 @@ export function JournalEntryPanel({
     }
   }
 
+  const wordCount = countWords(draftHtml)
+  const lat = entry?.location_lat
+  const lng = entry?.location_lng
+
   return (
     <div>
-      <h3 className="mb-3 font-serif text-lg text-stone-900">{formatLongDate(dateKey)}</h3>
+      <h3 className="mb-1 font-serif text-lg text-stone-900">{formatLongDate(dateKey)}</h3>
+
+      {(wordCount > 0 || (lat != null && lng != null)) && (
+        <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
+          {wordCount > 0 && (
+            <span>
+              {wordCount} {wordCount === 1 ? 'word' : 'words'} ·{' '}
+              {estimateReadingMinutes(wordCount)} min read
+            </span>
+          )}
+          {lat != null && lng != null && (
+            <a
+              href={mapUrl(lat, lng)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-stone-600"
+            >
+              📍 {lat.toFixed(4)}, {lng.toFixed(4)}
+            </a>
+          )}
+        </div>
+      )}
 
       {editing ? (
         <div>

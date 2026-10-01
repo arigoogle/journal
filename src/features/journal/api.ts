@@ -1,6 +1,7 @@
 import { supabase } from '../../lib/supabase/client'
 import type { JournalEntry } from '../../types'
 import { toDateKey } from '../../utils/date'
+import type { Coordinates } from './geolocation'
 
 export class JournalApiError extends Error {}
 
@@ -34,10 +35,26 @@ export async function fetchEntryByDate(dateKey: string): Promise<JournalEntry | 
   return data
 }
 
-export async function saveEntry(dateKey: string, content: string): Promise<JournalEntry> {
+/**
+ * `location` is only written on first create (see JournalEntryPanel) — it is
+ * omitted from the payload on later saves so an existing entry's captured
+ * location is never overwritten.
+ */
+export async function saveEntry(
+  dateKey: string,
+  content: string,
+  location?: Coordinates | null,
+): Promise<JournalEntry> {
   const { data, error } = await supabase
     .from('journal_entries')
-    .upsert({ date: dateKey, content }, { onConflict: 'date' })
+    .upsert(
+      {
+        date: dateKey,
+        content,
+        ...(location ? { location_lat: location.lat, location_lng: location.lng } : {}),
+      },
+      { onConflict: 'date' },
+    )
     .select('*')
     .single()
 

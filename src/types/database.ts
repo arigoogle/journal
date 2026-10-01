@@ -14,6 +14,8 @@ export interface Database {
           id: string
           date: string
           content: string
+          location_lat: number | null
+          location_lng: number | null
           created_at: string
           updated_at: string
         }
@@ -21,6 +23,8 @@ export interface Database {
           id?: string
           date: string
           content: string
+          location_lat?: number | null
+          location_lng?: number | null
           created_at?: string
           updated_at?: string
         }
@@ -28,6 +32,8 @@ export interface Database {
           id?: string
           date?: string
           content?: string
+          location_lat?: number | null
+          location_lng?: number | null
           created_at?: string
           updated_at?: string
         }
