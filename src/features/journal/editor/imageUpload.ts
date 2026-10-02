@@ -83,7 +83,13 @@ async function uploadToCloudinary(original: File): Promise<string> {
 
   const data = (await response.json()) as { secure_url?: string }
   if (!data.secure_url) throw new ImageUploadError('Could not upload image. Please try again.')
-  return data.secure_url
+
+  // Phone photos are frequently HEIC, which most browsers can't render in an
+  // <img> tag. Requesting Cloudinary's automatic format/quality delivery
+  // transformation guarantees a web-compatible image (JPEG/WebP/etc,
+  // whichever best suits the viewer's browser) regardless of what was
+  // actually uploaded, instead of relying on client-side conversion alone.
+  return data.secure_url.replace('/upload/', '/upload/f_auto,q_auto/')
 }
 
 /**
