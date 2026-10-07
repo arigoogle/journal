@@ -22,3 +22,9 @@ export function toEditorContent(raw: string): string {
     .map((paragraph) => `<p>${escapeHtml(paragraph).replace(/\n/g, '<br>')}</p>`)
     .join('')
 }
+
+/** Returns the `src` of the first `<img>` in entry content, if any. */
+export function extractFirstImageSrc(html: string): string | null {
+  const match = html.match(/<img[^>]+src=["']([^"']+)["']/)
+  return match ? match[1] : null
+}

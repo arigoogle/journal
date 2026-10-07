@@ -5,14 +5,18 @@ const NAV_ITEMS = [
   { to: '/', label: 'Journal', end: true },
   { to: '/pursuits', label: 'Pursuits', end: false },
   { to: '/overview', label: 'Overview', end: false },
+  { to: '/archive', label: 'Archive', end: false },
 ]
 
+// The Journal page hosts the rich-text editor and the Archive page hosts a
+// photo grid — both benefit from more horizontal room than the other pages.
+// The outer shell (and the nav bar inside it) stays a constant width across
+// routes so the header never shifts when navigating — only these two get an
+// inner width constraint lifted.
+const WIDE_ROUTES = new Set(['/', '/archive'])
+
 export function AppLayout() {
-  // The Journal page hosts the rich-text editor and benefits from more
-  // horizontal room, but the outer shell (and the nav bar inside it) stays
-  // a constant width across routes so the header never shifts when
-  // navigating — only non-Journal pages get an inner width constraint.
-  const isJournalRoute = useLocation().pathname === '/'
+  const isWideRoute = WIDE_ROUTES.has(useLocation().pathname)
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-6xl flex-col px-4">
@@ -44,7 +48,7 @@ export function AppLayout() {
       </header>
 
       <main className="flex-1 py-6">
-        {isJournalRoute ? (
+        {isWideRoute ? (
           <Outlet />
         ) : (
           <div className="mx-auto w-full max-w-2xl">
