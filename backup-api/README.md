@@ -38,90 +38,118 @@ exercise the full flow locally.
 
 ## Deploying to DreamHost (shared hosting)
 
-These are the standard steps for DreamHost's shared plans — adjust if your
-panel looks different.
+Live at `https://api.bioverbiometrics.com`, deployed 2026-10-09. These are
+the steps that actually worked on this account — a few things differ from
+generic Laravel-on-shared-hosting advice, noted below.
 
-### 1. Create the database
+### Key gotcha: no docroot control, so the app lives outside the domain folder
 
-DreamHost panel → **Databases → MySQL Databases** → create a new database.
-Note the **hostname**, **database name**, **username**, and **password** it
-gives you — you'll need all four.
+This account's domain directory (`~/api.bioverbiometrics.com/`) is always
+served as-is — there's no panel setting here to point it at a `public/`
+subfolder of a deeper app directory. So instead of putting the whole app
+under the domain folder, the layout is:
 
-### 2. Point a (sub)domain at this app
+- `~/backup-api/` — the entire Laravel app (`app/`, `vendor/`, `.env`,
+  `storage/`, everything) — **not** web-accessible.
+- `~/api.bioverbiometrics.com/` — only `index.php`, `.htaccess`, and
+  `robots.txt` copied from `backup-api/public/`, plus a `storage` symlink.
+  `index.php`'s two `require` paths are rewritten from `__DIR__.'/../'` to
+  `__DIR__.'/../backup-api/'` since it now lives one level further from the
+  app than Laravel's default `public/index.php` assumes.
 
-DreamHost panel → **Domains → Manage Domains** → add/edit the domain or
-subdomain you want this on (e.g. `backup.yourdomain.com`). Under its web
-directory settings, you'll eventually point it at this app's `public/`
-folder (step 4) — a plain Laravel app can't be served from its repo root.
+If your panel *does* let you set a custom web directory, pointing it at
+`backup-api/public` directly is simpler and the stock `public/index.php`
+needs no edits — this split-directory approach is only necessary when that
+option isn't available.
 
-Also set the domain's **PHP version to 8.2 or newer** in the same panel
-(this app needs PHP ≥ 8.2).
+### Key gotcha: `php` on the CLI is 8.2, but the app needs 8.3+
 
-### 3. Upload the code
+`composer.lock` (built locally) pinned dependencies requiring PHP ≥ 8.3.
+The default `php` on this account's SSH is 8.2.30, which fails with a
+platform_check.php fatal error. The fix: DreamHost keeps versioned binaries
+at `/usr/local/php{56,70,...,85}/bin/php` — use
+`/usr/local/php83/bin/php artisan ...` for every artisan command instead of
+bare `php`. (The *web-serving* PHP version, set separately in the panel per
+domain, was already 8.3+ here — only the SSH CLI default was behind.)
 
-Over SSH (panel → **Users → Manage Users** → enable shell access if you
-haven't already):
+### Steps
 
-```bash
-ssh your_user@yourdomain.com
-cd ~/yourdomain.com   # or wherever the domain's directory is
-git clone <your repo url> backup-api
-# or: upload via SFTP/rsync if you'd rather not put the repo on the server
-```
+1. **Database** — created via DreamHost panel → Databases → MySQL
+   Databases, giving you a hostname, DB name, username, and password.
 
-If Composer isn't already available over SSH, DreamHost has docs for
-installing it per-account — see
-https://help.dreamhost.com/hc/en-us/articles/115000702202.
+2. **Build production deps locally** (DreamHost's SSH has no Composer):
+   ```bash
+   cd backup-api
+   composer install --no-dev --optimize-autoloader
+   ```
 
-```bash
-cd backup-api
-composer install --no-dev --optimize-autoloader
-```
+3. **Package and upload everything except dev-only files**:
+   ```bash
+   tar czf /tmp/deploy.tar.gz \
+     --exclude='tests' --exclude='.env' --exclude='database/database.sqlite' \
+     --exclude='storage/app/public/entries' \
+     app bootstrap config database public resources routes vendor \
+     artisan composer.json composer.lock .env.example
+   scp -P 22 /tmp/deploy.tar.gz user@host:~/backup-api-deploy.tar.gz
+   ssh -p 22 user@host "mkdir -p ~/backup-api && tar xzf ~/backup-api-deploy.tar.gz -C ~/backup-api && rm ~/backup-api-deploy.tar.gz"
+   ```
+   `storage/` and `bootstrap/cache/` are gitignored (empty placeholders), so
+   create them directly on the server instead of relying on the tarball:
+   ```bash
+   ssh -p 22 user@host "mkdir -p ~/backup-api/storage/app/public ~/backup-api/storage/app/private \
+     ~/backup-api/storage/framework/cache/data ~/backup-api/storage/framework/cache/locks \
+     ~/backup-api/storage/framework/sessions ~/backup-api/storage/framework/testing \
+     ~/backup-api/storage/framework/views ~/backup-api/storage/logs ~/backup-api/bootstrap/cache \
+     && chmod -R 775 ~/backup-api/storage ~/backup-api/bootstrap/cache"
+   ```
 
-### 4. Point the domain's web directory at `public/`
+4. **Write `.env` directly on the server** (don't upload your local one —
+   compose a fresh production copy: real `APP_KEY` via
+   `php artisan key:generate --show` run locally, a fresh
+   `BACKUP_API_TOKEN` via `openssl rand -hex 32`, `APP_ENV=production`,
+   `APP_DEBUG=false`, the DB credentials from step 1, and
+   `CORS_ALLOWED_ORIGINS` set to the main app's real production URL). Then:
+   ```bash
+   scp -P 22 /tmp/prod.env user@host:~/backup-api/.env
+   ssh -p 22 user@host "chmod 600 ~/backup-api/.env"
+   ```
 
-Back in **Manage Domains**, set this domain/subdomain's web directory to
-`backup-api/public` (the path you cloned into, plus `/public`). This is the
-part that makes a bare domain folder serve Laravel correctly instead of
-exposing the whole app source.
+5. **Copy the public-facing files**, with `index.php`'s paths adjusted as
+   described above, then symlink storage:
+   ```bash
+   scp -P 22 index.php .htaccess robots.txt user@host:~/api.bioverbiometrics.com/
+   ssh -p 22 user@host "ln -sfn ~/backup-api/storage/app/public ~/api.bioverbiometrics.com/storage"
+   ```
 
-### 5. Configure the app
+6. **Migrate**, using the versioned PHP binary:
+   ```bash
+   ssh -p 22 user@host "cd ~/backup-api && /usr/local/php83/bin/php artisan migrate --force"
+   ```
 
-```bash
-cp .env.example .env
-php artisan key:generate
-```
+7. **Verify** before wiring up the main app:
+   ```bash
+   curl https://api.bioverbiometrics.com/up
+   curl -i -X POST https://api.bioverbiometrics.com/api/entries \
+     -H "Authorization: Bearer <BACKUP_API_TOKEN>" -H "Content-Type: application/json" \
+     -d '{"date":"2026-01-01","content":"<p>test</p>"}'
+   ```
+   Check `~/backup-api/storage/logs/laravel.log` for anything unexpected —
+   no file at all means no errors were logged.
 
-Edit `.env`:
-- `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` — from step 1.
-- `BACKUP_API_TOKEN` — generate one with `openssl rand -hex 32`. You'll
-  reuse this exact value as `VITE_BACKUP_API_TOKEN` in the main app.
-- `CORS_ALLOWED_ORIGINS` — the main app's production URL, e.g.
-  `https://journal-beryl-psi.vercel.app`.
-- `CORS_ALLOWED_ORIGIN_PATTERNS` — leave the default; it matches Vercel's
-  per-deploy preview URLs for this project.
-- `APP_URL` — `https://backup.yourdomain.com` (your actual domain).
-- `APP_ENV=production`, `APP_DEBUG=false`.
+8. **Wire up the main app** — set `VITE_BACKUP_API_URL` and
+   `VITE_BACKUP_API_TOKEN` as Vercel production env vars (the token needs
+   `--type config` since any `VITE_`-prefixed var is inlined into the public
+   bundle regardless of Vercel's secret/config distinction — there's no way
+   around this for a pure static-frontend app with no server of its own; see
+   `src/features/journal/backupApi.ts` for the accepted tradeoff), then
+   redeploy.
 
-### 6. Migrate and link storage
-
-```bash
-php artisan migrate --force
-php artisan storage:link
-```
-
-### 7. Wire up the main app
-
-In Vercel's project settings (or the main app's `.env` for local dev), set:
-
-```
-VITE_BACKUP_API_URL=https://backup.yourdomain.com
-VITE_BACKUP_API_TOKEN=<the same BACKUP_API_TOKEN from step 5>
-```
-
-Redeploy the main app. Save a journal entry and check
-`storage/logs/laravel.log` here (or the `journal_entries` table) to confirm
-it arrived.
+9. **Backfill pre-existing entries** once, from the repo root:
+   ```bash
+   node --env-file=.env scripts/backfill-backup.mjs
+   ```
+   (needs `SUPABASE_SERVICE_ROLE_KEY` in `.env` temporarily — see that
+   script's header comment for why the anon key won't work here.)
 
 ### Notes on shared hosting limits
 
