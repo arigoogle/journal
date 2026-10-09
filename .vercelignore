@@ -1,0 +1,2 @@
+# Separate PHP app deployed to DreamHost, not part of this Vite build.
+backup-api

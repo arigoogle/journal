@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { JournalEntry } from '../../types'
 import { formatLongDate } from '../../utils/date'
 import { deleteEntry, saveEntry } from './api'
+import { backupDeleteEntry, backupEntry } from './backupApi'
 import { toEditorContent } from './editor/content'
 import { JournalEditor } from './editor/JournalEditor'
 import { getCurrentLocation, mapUrl } from './geolocation'
@@ -83,6 +84,9 @@ export function JournalEntryPanel({
       const saved = await saveEntry(dateKey, html, location)
       lastSavedHtmlRef.current = html
       onSaved(saved)
+      // Mirror to the DreamHost backup on explicit Save only — not every
+      // autosave tick — so it doesn't get hit on every keystroke pause.
+      if (exitOnSuccess) backupEntry(saved)
       setSaveStatus('saved')
       if (savedIndicatorTimerRef.current) clearTimeout(savedIndicatorTimerRef.current)
       savedIndicatorTimerRef.current = setTimeout(() => setSaveStatus('idle'), SAVED_INDICATOR_MS)
@@ -148,6 +152,7 @@ export function JournalEntryPanel({
     setDeleting(true)
     try {
       await deleteEntry(entry.id)
+      backupDeleteEntry(dateKey)
       onDeleted()
     } catch {
       setSaveError('Could not delete this entry. Please try again.')
