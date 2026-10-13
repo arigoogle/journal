@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { to: '/pursuits', label: 'Pursuits', end: false },
   { to: '/overview', label: 'Overview', end: false },
   { to: '/archive', label: 'Archive', end: false },
+  { to: '/search', label: 'Search', end: false },
 ]
 
 // The Journal page hosts the rich-text editor and the Archive page hosts a

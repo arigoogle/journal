@@ -7,6 +7,7 @@ import { LoginPage } from './pages/LoginPage'
 import { OverviewPage } from './pages/OverviewPage'
 import { PursuitDetailPage } from './pages/PursuitDetailPage'
 import { PursuitsPage } from './pages/PursuitsPage'
+import { SearchPage } from './pages/SearchPage'
 
 export function App() {
   return (
@@ -25,6 +26,7 @@ export function App() {
         <Route path="/pursuits/:id" element={<PursuitDetailPage />} />
         <Route path="/overview" element={<OverviewPage />} />
         <Route path="/archive" element={<ArchivePage />} />
+        <Route path="/search" element={<SearchPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

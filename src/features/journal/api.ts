@@ -24,6 +24,22 @@ export async function fetchEntriesForMonth(monthDate: Date): Promise<JournalEntr
   return data ?? []
 }
 
+/** Case-insensitive substring search over entry content, newest first. */
+export async function searchEntries(query: string): Promise<JournalEntry[]> {
+  // Escape ilike's own wildcards so a literal "%" or "_" in the search box
+  // doesn't get treated as a pattern.
+  const escaped = query.replace(/[%_]/g, (c) => `\\${c}`)
+
+  const { data, error } = await supabase
+    .from('journal_entries')
+    .select('*')
+    .ilike('content', `%${escaped}%`)
+    .order('date', { ascending: false })
+
+  if (error) wrap('Could not search journal entries.')
+  return data ?? []
+}
+
 export async function fetchEntryByDate(dateKey: string): Promise<JournalEntry | null> {
   const { data, error } = await supabase
     .from('journal_entries')
