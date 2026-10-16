@@ -15,6 +15,36 @@ body {
   @apply bg-stone-50 font-sans text-stone-900 antialiased;
 }
 
+/* iOS Safari auto-zooms the page when focusing a text input smaller than
+   16px — every form field in the app uses text-sm (14px), so without this
+   every tap into a field on an iPhone jolts the viewport in and out. */
+@media (max-width: 640px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
+/* Hints that a row scrolls horizontally by fading its edges, instead of
+   hard-clipping content with no visual cue. */
+.scroll-fade-x {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 12px,
+    black calc(100% - 12px),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 12px,
+    black calc(100% - 12px),
+    transparent
+  );
+}
+
 /* Journal writing surface — comfortable long-form typography. */
 .journal-prose {
   font-family: var(--font-serif);

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase/client'
 
@@ -17,19 +18,35 @@ const NAV_ITEMS = [
 const WIDE_ROUTES = new Set(['/', '/archive'])
 
 export function AppLayout() {
-  const isWideRoute = WIDE_ROUTES.has(useLocation().pathname)
+  const location = useLocation()
+  const isWideRoute = WIDE_ROUTES.has(location.pathname)
+  const navRef = useRef<HTMLElement>(null)
+
+  // On a narrow screen the nav row scrolls — if the current route's pill
+  // isn't the first one, make sure it's actually visible instead of
+  // defaulting to the scrolled-to-start position.
+  useEffect(() => {
+    const active = navRef.current?.querySelector('[aria-current="page"]')
+    active?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  }, [location.pathname])
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-6xl flex-col px-4">
-      <header className="flex items-center justify-between border-b border-stone-200 py-5">
-        <nav className="flex gap-1">
+    <div className="mx-auto flex min-h-dvh max-w-6xl flex-col px-4 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+      <header className="flex items-center justify-between gap-2 border-b border-stone-200 py-5">
+        {/* overflow-x-auto + hidden scrollbar: on narrow phones the five
+            pills don't all fit — let the row scroll instead of wrapping or
+            squeezing "Sign out" off-screen. */}
+        <nav
+          ref={navRef}
+          className="scroll-fade-x flex min-w-0 flex-1 gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
-                `rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
+                `shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
                   isActive
                     ? 'bg-stone-900 text-white'
                     : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900'
@@ -42,7 +59,7 @@ export function AppLayout() {
         </nav>
         <button
           onClick={() => supabase.auth.signOut()}
-          className="text-xs text-stone-400 hover:text-stone-600"
+          className="shrink-0 text-xs text-stone-400 hover:text-stone-600"
         >
           Sign out
         </button>
