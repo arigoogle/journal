@@ -28,40 +28,53 @@ export function PursuitDetailPage() {
       .catch(() => setError('Could not load this pursuit.'))
   }, [id])
 
-  if (error) return <p className="text-sm text-red-600">{error}</p>
-  if (pursuit === undefined) return <p className="text-sm text-stone-400">Loading…</p>
-  if (pursuit === null) return <p className="text-sm text-stone-500">Pursuit not found.</p>
+  if (error) return <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+  if (pursuit === undefined)
+    return <p className="text-sm text-stone-400 dark:text-stone-500">Loading…</p>
+  if (pursuit === null)
+    return <p className="text-sm text-stone-500 dark:text-stone-400">Pursuit not found.</p>
 
   return (
     <div className="max-w-lg">
-      <Link to="/pursuits" className="mb-6 inline-block text-sm text-stone-400 hover:text-stone-700">
+      <Link
+        to="/pursuits"
+        className="mb-6 inline-block text-sm text-stone-400 hover:text-stone-700 dark:text-stone-500 dark:hover:text-stone-300"
+      >
         &larr; Pursuits
       </Link>
 
-      <h1 className="mb-4 font-serif text-2xl text-stone-900">{pursuit.title}</h1>
+      <h1 className="mb-4 font-serif text-2xl text-stone-900 dark:text-stone-100">
+        {pursuit.title}
+      </h1>
 
       <dl className="space-y-4 text-sm">
         <div>
-          <dt className="text-stone-400">Started</dt>
-          <dd className="text-stone-800">{formatLongDate(pursuit.started_at)}</dd>
+          <dt className="text-stone-400 dark:text-stone-500">Started</dt>
+          <dd className="text-stone-800 dark:text-stone-200">
+            {formatLongDate(pursuit.started_at)}
+          </dd>
         </div>
 
         {pursuit.deadline_at && (
           <div>
-            <dt className="text-stone-400">Deadline</dt>
-            <dd className="text-stone-800">{formatLongDate(pursuit.deadline_at)}</dd>
+            <dt className="text-stone-400 dark:text-stone-500">Deadline</dt>
+            <dd className="text-stone-800 dark:text-stone-200">
+              {formatLongDate(pursuit.deadline_at)}
+            </dd>
           </div>
         )}
 
         {pursuit.description && (
           <div>
-            <dt className="text-stone-400">Description</dt>
-            <dd className="whitespace-pre-wrap text-stone-800">{pursuit.description}</dd>
+            <dt className="text-stone-400 dark:text-stone-500">Description</dt>
+            <dd className="whitespace-pre-wrap text-stone-800 dark:text-stone-200">
+              {pursuit.description}
+            </dd>
           </div>
         )}
 
         <div>
-          <dt className="mb-1 text-stone-400">Status</dt>
+          <dt className="mb-1 text-stone-400 dark:text-stone-500">Status</dt>
           <dd>
             <StatusBadge status={pursuit.status} />
           </dd>
@@ -71,13 +84,13 @@ export function PursuitDetailPage() {
       <div className="mt-6 flex items-center gap-2">
         <button
           onClick={() => setShowStatusForm(true)}
-          className="rounded-md bg-stone-900 px-4 py-1.5 text-sm font-medium text-white hover:opacity-90"
+          className="rounded-md bg-stone-900 px-4 py-1.5 text-sm font-medium text-white hover:opacity-90 dark:bg-stone-100 dark:text-stone-900"
         >
           Update Status
         </button>
         <button
           onClick={() => setShowEditForm(true)}
-          className="rounded-md px-4 py-1.5 text-sm text-stone-600 hover:bg-stone-100"
+          className="rounded-md px-4 py-1.5 text-sm text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-900"
         >
           Edit
         </button>
@@ -85,15 +98,17 @@ export function PursuitDetailPage() {
 
       {history.length > 0 && (
         <div className="mt-10">
-          <h2 className="mb-3 text-sm font-medium text-stone-500">History</h2>
-          <ul className="space-y-3 border-l border-stone-200 pl-4">
+          <h2 className="mb-3 text-sm font-medium text-stone-500 dark:text-stone-400">History</h2>
+          <ul className="space-y-3 border-l border-stone-200 pl-4 dark:border-stone-800">
             {history.map((h, i) => (
               <li key={h.id} className="text-sm">
-                <div className="text-stone-400">{formatLongDate(h.created_at.slice(0, 10))}</div>
-                {i === 0 && <div className="text-stone-500">Created</div>}
+                <div className="text-stone-400 dark:text-stone-500">
+                  {formatLongDate(h.created_at.slice(0, 10))}
+                </div>
+                {i === 0 && <div className="text-stone-500 dark:text-stone-400">Created</div>}
                 <div className="mt-0.5 flex items-center gap-2">
                   <StatusBadge status={h.status} />
-                  {h.note && <span className="text-stone-600">{h.note}</span>}
+                  {h.note && <span className="text-stone-600 dark:text-stone-300">{h.note}</span>}
                 </div>
               </li>
             ))}

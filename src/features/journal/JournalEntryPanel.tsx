@@ -124,11 +124,11 @@ export function JournalEntryPanel({
   }, [])
 
   if (loading) {
-    return <p className="text-sm text-stone-400">Loading journal…</p>
+    return <p className="text-sm text-stone-400 dark:text-stone-500">Loading journal…</p>
   }
 
   if (error) {
-    return <p className="text-sm text-red-600">{error}</p>
+    return <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
   }
 
   function handleSaveClick() {
@@ -166,10 +166,12 @@ export function JournalEntryPanel({
 
   return (
     <div>
-      <h3 className="mb-1 font-serif text-lg text-stone-900">{formatLongDate(dateKey)}</h3>
+      <h3 className="mb-1 font-serif text-lg text-stone-900 dark:text-stone-100">
+        {formatLongDate(dateKey)}
+      </h3>
 
       {(wordCount > 0 || (lat != null && lng != null)) && (
-        <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400">
+        <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-400 dark:text-stone-500">
           {wordCount > 0 && (
             <span>
               {wordCount} {wordCount === 1 ? 'word' : 'words'} ·{' '}
@@ -181,7 +183,7 @@ export function JournalEntryPanel({
               href={mapUrl(lat, lng)}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-stone-600"
+              className="hover:text-stone-600 dark:hover:text-stone-300"
             >
               📍 {lat.toFixed(4)}, {lng.toFixed(4)}
             </a>
@@ -203,13 +205,13 @@ export function JournalEntryPanel({
             }}
           />
 
-          {saveError && <p className="mt-2 text-sm text-red-600">{saveError}</p>}
+          {saveError && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{saveError}</p>}
 
           <div className="mt-3 flex items-center gap-3">
             <button
               onClick={handleSaveClick}
               disabled={saveStatus === 'saving' || draftEmpty}
-              className="rounded-md bg-stone-900 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
+              className="rounded-md bg-stone-900 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50 dark:bg-stone-100 dark:text-stone-900"
             >
               {saveStatus === 'saving' ? 'Saving…' : 'Save'}
             </button>
@@ -217,42 +219,44 @@ export function JournalEntryPanel({
               <button
                 onClick={handleCancel}
                 disabled={saveStatus === 'saving'}
-                className="rounded-md px-4 py-1.5 text-sm text-stone-500 hover:bg-stone-100"
+                className="rounded-md px-4 py-1.5 text-sm text-stone-500 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-900"
               >
                 Cancel
               </button>
             )}
-            {saveStatus === 'saved' && <span className="text-xs text-stone-400">Saved</span>}
+            {saveStatus === 'saved' && (
+              <span className="text-xs text-stone-400 dark:text-stone-500">Saved</span>
+            )}
           </div>
         </div>
       ) : entry ? (
         <div>
           <JournalEditor content={baselineHtml} editable={false} />
 
-          {saveError && <p className="mt-2 text-sm text-red-600">{saveError}</p>}
+          {saveError && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{saveError}</p>}
 
           <div className="mt-4 flex items-center gap-2">
             <button
               onClick={() => setEditing(true)}
-              className="rounded-md px-4 py-1.5 text-sm text-stone-600 hover:bg-stone-100"
+              className="rounded-md px-4 py-1.5 text-sm text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-900"
             >
               Edit
             </button>
 
             {confirmingDelete ? (
               <span className="flex items-center gap-2 text-sm">
-                <span className="text-stone-500">Delete this entry?</span>
+                <span className="text-stone-500 dark:text-stone-400">Delete this entry?</span>
                 <button
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="font-medium text-red-600 hover:text-red-700 disabled:opacity-50"
+                  className="font-medium text-red-600 hover:text-red-700 disabled:opacity-50 dark:text-red-400 dark:hover:text-red-300"
                 >
                   {deleting ? 'Deleting…' : 'Confirm'}
                 </button>
                 <button
                   onClick={() => setConfirmingDelete(false)}
                   disabled={deleting}
-                  className="text-stone-500 hover:text-stone-700"
+                  className="text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200"
                 >
                   Cancel
                 </button>
@@ -260,7 +264,7 @@ export function JournalEntryPanel({
             ) : (
               <button
                 onClick={() => setConfirmingDelete(true)}
-                className="rounded-md px-4 py-1.5 text-sm text-stone-400 hover:bg-red-50 hover:text-red-600"
+                className="rounded-md px-4 py-1.5 text-sm text-stone-400 hover:bg-red-50 hover:text-red-600 dark:text-stone-500 dark:hover:bg-red-950 dark:hover:text-red-400"
               >
                 Delete
               </button>

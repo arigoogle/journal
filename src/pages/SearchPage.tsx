@@ -55,14 +55,16 @@ export function SearchPage() {
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search your journal…"
         autoFocus
-        className="w-full rounded-full border border-stone-200 px-4 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-stone-400 focus:outline-none"
+        className="w-full rounded-full border border-stone-200 bg-white px-4 py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-stone-400 focus:outline-none dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:placeholder:text-stone-500 dark:focus:border-stone-600"
       />
 
       <div className="mt-6 space-y-1">
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
         {!error && !loading && query.trim() !== '' && results.length === 0 && (
-          <p className="text-sm text-stone-400">No entries match "{query.trim()}".</p>
+          <p className="text-sm text-stone-400 dark:text-stone-500">
+            No entries match "{query.trim()}".
+          </p>
         )}
 
         {results.map((entry) => (
@@ -70,10 +72,12 @@ export function SearchPage() {
             key={entry.id}
             type="button"
             onClick={() => navigate('/', { state: { dateKey: entry.date } })}
-            className="block w-full rounded-lg px-3 py-3 text-left hover:bg-stone-50"
+            className="block w-full rounded-lg px-3 py-3 text-left hover:bg-stone-50 dark:hover:bg-stone-900"
           >
-            <p className="text-sm font-medium text-stone-900">{formatLongDate(entry.date)}</p>
-            <p className="mt-0.5 text-sm text-stone-500">
+            <p className="text-sm font-medium text-stone-900 dark:text-stone-100">
+              {formatLongDate(entry.date)}
+            </p>
+            <p className="mt-0.5 text-sm text-stone-500 dark:text-stone-400">
               {excerptAround(entry.content, query.trim())}
             </p>
           </button>

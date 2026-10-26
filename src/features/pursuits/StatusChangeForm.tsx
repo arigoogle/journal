@@ -37,14 +37,17 @@ export function StatusChangeForm({ pursuit, onClose, onChanged }: StatusChangeFo
     <Modal title="Change Status" onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="status-select" className="mb-1 block text-sm text-stone-600">
+          <label
+            htmlFor="status-select"
+            className="mb-1 block text-sm text-stone-600 dark:text-stone-300"
+          >
             Status
           </label>
           <select
             id="status-select"
             value={status}
             onChange={(e) => setStatus(e.target.value as PursuitStatus)}
-            className="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-stone-500 focus:outline-none"
+            className="w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 focus:border-stone-500 focus:outline-none dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:focus:border-stone-500"
           >
             {options.map((s) => (
               <option key={s} value={s}>
@@ -55,7 +58,10 @@ export function StatusChangeForm({ pursuit, onClose, onChanged }: StatusChangeFo
         </div>
 
         <div>
-          <label htmlFor="status-note" className="mb-1 block text-sm text-stone-600">
+          <label
+            htmlFor="status-note"
+            className="mb-1 block text-sm text-stone-600 dark:text-stone-300"
+          >
             Note
           </label>
           <input
@@ -64,17 +70,17 @@ export function StatusChangeForm({ pursuit, onClose, onChanged }: StatusChangeFo
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Optional"
-            className="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-stone-500 focus:outline-none"
+            className="w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 focus:border-stone-500 focus:outline-none dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:focus:border-stone-500"
           />
         </div>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
         <div className="flex items-center gap-2 pt-1">
           <button
             type="submit"
             disabled={submitting}
-            className="rounded-md bg-stone-900 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
+            className="rounded-md bg-stone-900 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50 dark:bg-stone-100 dark:text-stone-900"
           >
             {submitting ? 'Saving…' : 'Confirm'}
           </button>
@@ -82,7 +88,7 @@ export function StatusChangeForm({ pursuit, onClose, onChanged }: StatusChangeFo
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-md px-4 py-1.5 text-sm text-stone-500 hover:bg-stone-100"
+            className="rounded-md px-4 py-1.5 text-sm text-stone-500 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800"
           >
             Cancel
           </button>

@@ -17,23 +17,29 @@ export function MonthlyMomentum({ monthDate, entryCount }: MonthlyMomentumProps)
   const daysRemaining = isCurrentMonth ? total - daysElapsed : null
 
   return (
-    <div className="rounded-lg border border-stone-200 bg-white p-4">
-      <p className="text-xs font-medium tracking-wide text-stone-400 uppercase">
+    <div className="rounded-lg border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900">
+      <p className="text-xs font-medium tracking-wide text-stone-400 uppercase dark:text-stone-500">
         Monthly Momentum
       </p>
 
       <div className="mt-2 flex items-baseline justify-between">
         <p>
-          <span className="font-serif text-2xl text-stone-900">{entryCount}</span>{' '}
-          <span className="text-sm text-stone-500">
+          <span className="font-serif text-2xl text-stone-900 dark:text-stone-100">
+            {entryCount}
+          </span>{' '}
+          <span className="text-sm text-stone-500 dark:text-stone-400">
             {entryCount === 1 ? 'entry written' : 'entries written'}
           </span>
         </p>
-        {pace !== null && <span className="text-xs font-medium text-stone-500">{pace}% pace</span>}
+        {pace !== null && (
+          <span className="text-xs font-medium text-stone-500 dark:text-stone-400">
+            {pace}% pace
+          </span>
+        )}
       </div>
 
       {daysRemaining !== null && (
-        <p className="mt-1 text-xs text-stone-400">
+        <p className="mt-1 text-xs text-stone-400 dark:text-stone-500">
           {daysRemaining === 0
             ? 'Last day of the month'
             : `${daysRemaining} day${daysRemaining === 1 ? '' : 's'} remaining`}

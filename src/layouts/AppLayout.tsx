@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { ThemeToggle } from '../components/ThemeToggle'
 import { supabase } from '../lib/supabase/client'
 
 const NAV_ITEMS = [
@@ -32,7 +33,7 @@ export function AppLayout() {
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-6xl flex-col px-4 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
-      <header className="flex items-center justify-between gap-2 border-b border-stone-200 py-5">
+      <header className="flex items-center justify-between gap-2 border-b border-stone-200 py-5 dark:border-stone-800">
         {/* overflow-x-auto + hidden scrollbar: on narrow phones the five
             pills don't all fit — let the row scroll instead of wrapping or
             squeezing "Sign out" off-screen. */}
@@ -48,8 +49,8 @@ export function AppLayout() {
               className={({ isActive }) =>
                 `shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-stone-900 text-white'
-                    : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900'
+                    ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900'
+                    : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-900 dark:hover:text-stone-100'
                 }`
               }
             >
@@ -57,12 +58,15 @@ export function AppLayout() {
             </NavLink>
           ))}
         </nav>
-        <button
-          onClick={() => supabase.auth.signOut()}
-          className="shrink-0 text-xs text-stone-400 hover:text-stone-600"
-        >
-          Sign out
-        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          <ThemeToggle />
+          <button
+            onClick={() => supabase.auth.signOut()}
+            className="text-xs text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300"
+          >
+            Sign out
+          </button>
+        </div>
       </header>
 
       <main className="flex-1 py-6">

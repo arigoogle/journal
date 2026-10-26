@@ -36,7 +36,7 @@ export function ArchivePage() {
   return (
     <div className="mx-auto max-w-3xl">
       {error ? (
-        <p className="text-sm text-red-600">{error}</p>
+        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
       ) : (
         <PhotoCalendar
           monthDate={monthDate}

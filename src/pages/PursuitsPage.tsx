@@ -39,7 +39,9 @@ export function PursuitsPage() {
           <button
             onClick={() => setTab('current')}
             className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
-              tab === 'current' ? 'bg-stone-900 text-white' : 'text-stone-500 hover:bg-stone-100'
+              tab === 'current'
+                ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900'
+                : 'text-stone-500 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-900'
             }`}
           >
             Current
@@ -47,7 +49,9 @@ export function PursuitsPage() {
           <button
             onClick={() => setTab('history')}
             className={`rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
-              tab === 'history' ? 'bg-stone-900 text-white' : 'text-stone-500 hover:bg-stone-100'
+              tab === 'history'
+                ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900'
+                : 'text-stone-500 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-900'
             }`}
           >
             History
@@ -56,7 +60,7 @@ export function PursuitsPage() {
 
         <button
           onClick={() => setShowNewForm(true)}
-          className="rounded-md bg-stone-900 px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
+          className="rounded-md bg-stone-900 px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 dark:bg-stone-100 dark:text-stone-900"
         >
           New Pursuit
         </button>
@@ -64,17 +68,19 @@ export function PursuitsPage() {
 
       {tab === 'current' ? (
         activeError ? (
-          <p className="text-sm text-red-600">{activeError}</p>
+          <p className="text-sm text-red-600 dark:text-red-400">{activeError}</p>
         ) : active === null ? (
-          <p className="text-sm text-stone-400">Loading pursuits…</p>
+          <p className="text-sm text-stone-400 dark:text-stone-500">Loading pursuits…</p>
         ) : active.length === 0 ? (
           <div className="py-12 text-center">
-            <p className="text-sm text-stone-500">No active pursuits.</p>
-            <p className="text-sm text-stone-400">What are you pursuing right now?</p>
+            <p className="text-sm text-stone-500 dark:text-stone-400">No active pursuits.</p>
+            <p className="text-sm text-stone-400 dark:text-stone-500">
+              What are you pursuing right now?
+            </p>
           </div>
         ) : (
           <div>
-            <p className="mb-3 text-sm text-stone-400">
+            <p className="mb-3 text-sm text-stone-400 dark:text-stone-500">
               {active.length} active pursuit{active.length === 1 ? '' : 's'}
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -93,8 +99,8 @@ export function PursuitsPage() {
                 onClick={() => setHistoryFilter(f)}
                 className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
                   historyFilter === f
-                    ? 'bg-stone-900 text-white'
-                    : 'text-stone-500 hover:bg-stone-100'
+                    ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900'
+                    : 'text-stone-500 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-900'
                 }`}
               >
                 {f === 'ALL' ? 'All' : f.charAt(0) + f.slice(1).toLowerCase()}
@@ -103,11 +109,13 @@ export function PursuitsPage() {
           </div>
 
           {historyError ? (
-            <p className="text-sm text-red-600">{historyError}</p>
+            <p className="text-sm text-red-600 dark:text-red-400">{historyError}</p>
           ) : history === null ? (
-            <p className="text-sm text-stone-400">Loading history…</p>
+            <p className="text-sm text-stone-400 dark:text-stone-500">Loading history…</p>
           ) : history.length === 0 ? (
-            <p className="py-12 text-center text-sm text-stone-500">No pursuits here yet.</p>
+            <p className="py-12 text-center text-sm text-stone-500 dark:text-stone-400">
+              No pursuits here yet.
+            </p>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
               {history.map((p) => (

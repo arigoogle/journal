@@ -41,7 +41,10 @@ export function NewPursuitForm({ onClose, onCreated }: NewPursuitFormProps) {
     <Modal title="New Pursuit" onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="pursuit-title" className="mb-1 block text-sm text-stone-600">
+          <label
+            htmlFor="pursuit-title"
+            className="mb-1 block text-sm text-stone-600 dark:text-stone-300"
+          >
             Title
           </label>
           <input
@@ -52,12 +55,15 @@ export function NewPursuitForm({ onClose, onCreated }: NewPursuitFormProps) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Run a sub-20 5K"
-            className="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-stone-500 focus:outline-none"
+            className="w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 focus:border-stone-500 focus:outline-none dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:focus:border-stone-500"
           />
         </div>
 
         <div>
-          <label htmlFor="pursuit-description" className="mb-1 block text-sm text-stone-600">
+          <label
+            htmlFor="pursuit-description"
+            className="mb-1 block text-sm text-stone-600 dark:text-stone-300"
+          >
             Description
           </label>
           <textarea
@@ -66,13 +72,16 @@ export function NewPursuitForm({ onClose, onCreated }: NewPursuitFormProps) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Optional"
-            className="w-full resize-none rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-stone-500 focus:outline-none"
+            className="w-full resize-none rounded-md border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 focus:border-stone-500 focus:outline-none dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:focus:border-stone-500"
           />
         </div>
 
         <div className="flex gap-3">
           <div className="flex-1">
-            <label htmlFor="pursuit-started-at" className="mb-1 block text-sm text-stone-600">
+            <label
+              htmlFor="pursuit-started-at"
+              className="mb-1 block text-sm text-stone-600 dark:text-stone-300"
+            >
               Start date
             </label>
             <input
@@ -81,12 +90,15 @@ export function NewPursuitForm({ onClose, onCreated }: NewPursuitFormProps) {
               required
               value={startedAt}
               onChange={(e) => setStartedAt(e.target.value)}
-              className="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-stone-500 focus:outline-none"
+              className="w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 focus:border-stone-500 focus:outline-none dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:focus:border-stone-500"
             />
           </div>
 
           <div className="flex-1">
-            <label htmlFor="pursuit-deadline-at" className="mb-1 block text-sm text-stone-600">
+            <label
+              htmlFor="pursuit-deadline-at"
+              className="mb-1 block text-sm text-stone-600 dark:text-stone-300"
+            >
               Deadline
             </label>
             <input
@@ -95,18 +107,18 @@ export function NewPursuitForm({ onClose, onCreated }: NewPursuitFormProps) {
               min={startedAt}
               value={deadlineAt}
               onChange={(e) => setDeadlineAt(e.target.value)}
-              className="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-stone-500 focus:outline-none"
+              className="w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 focus:border-stone-500 focus:outline-none dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:focus:border-stone-500"
             />
           </div>
         </div>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
         <div className="flex items-center gap-2 pt-1">
           <button
             type="submit"
             disabled={submitting || !title.trim()}
-            className="rounded-md bg-stone-900 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
+            className="rounded-md bg-stone-900 px-4 py-1.5 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50 dark:bg-stone-100 dark:text-stone-900"
           >
             {submitting ? 'Creating…' : 'Create'}
           </button>
@@ -114,7 +126,7 @@ export function NewPursuitForm({ onClose, onCreated }: NewPursuitFormProps) {
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="rounded-md px-4 py-1.5 text-sm text-stone-500 hover:bg-stone-100"
+            className="rounded-md px-4 py-1.5 text-sm text-stone-500 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-stone-800"
           >
             Cancel
           </button>

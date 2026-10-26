@@ -51,20 +51,20 @@ export function OverviewPage() {
           onNextMonth={() => setMonthDate((d) => addMonths(d, 1))}
         />
 
-        {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+        {error && <p className="mt-4 text-sm text-red-600 dark:text-red-400">{error}</p>}
 
-        <p className="mt-6 mb-1 text-sm text-stone-500">Journal</p>
+        <p className="mt-6 mb-1 text-sm text-stone-500 dark:text-stone-400">Journal</p>
 
         {journaledDays === null ? (
-          <p className="text-sm text-stone-400">Loading…</p>
+          <p className="text-sm text-stone-400 dark:text-stone-500">Loading…</p>
         ) : (
           <>
-            <p className="mb-2 text-sm text-stone-800">
+            <p className="mb-2 text-sm text-stone-800 dark:text-stone-200">
               {journaledDays} / {total} days
             </p>
-            <div className="h-1 w-full overflow-hidden rounded-full bg-stone-100">
+            <div className="h-1 w-full overflow-hidden rounded-full bg-stone-100 dark:bg-stone-800">
               <div
-                className="h-full rounded-full bg-stone-900 transition-[width]"
+                className="h-full rounded-full bg-stone-900 transition-[width] dark:bg-stone-100"
                 style={{ width: `${pct}%` }}
               />
             </div>
@@ -72,24 +72,26 @@ export function OverviewPage() {
         )}
 
         {streak !== null && streak > 0 && (
-          <p className="mt-3 text-sm text-stone-400">{streak}-day journaling streak</p>
+          <p className="mt-3 text-sm text-stone-400 dark:text-stone-500">
+            {streak}-day journaling streak
+          </p>
         )}
       </div>
 
       <div>
-        <p className="mb-1 text-sm text-stone-500">Current Pursuits</p>
+        <p className="mb-1 text-sm text-stone-500 dark:text-stone-400">Current Pursuits</p>
 
         {activePursuits === null ? (
-          <p className="text-sm text-stone-400">Loading…</p>
+          <p className="text-sm text-stone-400 dark:text-stone-500">Loading…</p>
         ) : activePursuits.length === 0 ? (
-          <p className="text-sm text-stone-400">No active pursuits.</p>
+          <p className="text-sm text-stone-400 dark:text-stone-500">No active pursuits.</p>
         ) : (
           <ul className="space-y-1.5">
             {activePursuits.map((p) => (
               <li key={p.id}>
                 <Link
                   to={`/pursuits/${p.id}`}
-                  className="text-sm text-stone-800 hover:text-stone-500"
+                  className="text-sm text-stone-800 hover:text-stone-500 dark:text-stone-200 dark:hover:text-stone-400"
                 >
                   {p.title}
                 </Link>

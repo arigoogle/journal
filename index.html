@@ -5,8 +5,17 @@
     <link rel="icon" type="image/png" href="/pwa-192.png" />
     <link rel="apple-touch-icon" href="/pwa-192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#1c1917" />
+    <meta name="theme-color" content="#fafaf9" />
     <meta name="description" content="A personal timeline for journaling and tracking what you're pursuing." />
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme')
+          var dark = stored ? stored === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
+          if (dark) document.documentElement.classList.add('dark')
+        } catch (e) {}
+      })()
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

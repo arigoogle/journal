@@ -44,15 +44,17 @@ export function PhotoCalendar({
         <button
           onClick={onPrevMonth}
           aria-label="Previous month"
-          className="rounded-md px-2 py-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700"
+          className="rounded-md px-2 py-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700 dark:text-stone-500 dark:hover:bg-stone-900 dark:hover:text-stone-200"
         >
           &lt;
         </button>
-        <h2 className="font-serif text-2xl text-stone-900">{formatMonthYear(monthDate)}</h2>
+        <h2 className="font-serif text-2xl text-stone-900 dark:text-stone-100">
+          {formatMonthYear(monthDate)}
+        </h2>
         <button
           onClick={onNextMonth}
           aria-label="Next month"
-          className="rounded-md px-2 py-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700"
+          className="rounded-md px-2 py-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700 dark:text-stone-500 dark:hover:bg-stone-900 dark:hover:text-stone-200"
         >
           &gt;
         </button>
@@ -65,7 +67,7 @@ export function PhotoCalendar({
           {WEEKDAY_LABELS.map((label) => (
             <div
               key={label}
-              className="pb-1 text-center text-[10px] font-medium tracking-wide text-stone-400 uppercase"
+              className="pb-1 text-center text-[10px] font-medium tracking-wide text-stone-400 uppercase dark:text-stone-500"
             >
               {label}
             </div>
@@ -83,8 +85,8 @@ export function PhotoCalendar({
                 type="button"
                 onClick={() => (photoUrl ? setPreviewDateKey(dateKey) : goToJournal(dateKey))}
                 className={`group relative block aspect-[4/5] w-full overflow-hidden rounded-sm sm:rounded-md ${
-                  photoUrl ? '' : 'bg-stone-50 hover:bg-stone-100'
-                } ${!inMonth ? 'opacity-40' : ''} ${isToday ? 'ring-1 ring-stone-900' : ''}`}
+                  photoUrl ? '' : 'bg-stone-50 hover:bg-stone-100 dark:bg-stone-900 dark:hover:bg-stone-800'
+                } ${!inMonth ? 'opacity-40' : ''} ${isToday ? 'ring-1 ring-stone-900 dark:ring-stone-100' : ''}`}
               >
                 {photoUrl ? (
                   <>
@@ -101,7 +103,9 @@ export function PhotoCalendar({
                 ) : (
                   <span
                     className={`flex h-full w-full items-center justify-center text-sm ${
-                      inMonth ? 'text-stone-300' : 'text-stone-200'
+                      inMonth
+                        ? 'text-stone-300 dark:text-stone-700'
+                        : 'text-stone-200 dark:text-stone-800'
                     }`}
                   >
                     {date.getDate()}

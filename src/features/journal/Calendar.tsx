@@ -28,15 +28,17 @@ export function Calendar({
         <button
           onClick={onPrevMonth}
           aria-label="Previous month"
-          className="rounded-md px-2 py-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700"
+          className="rounded-md px-2 py-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700 dark:text-stone-500 dark:hover:bg-stone-900 dark:hover:text-stone-200"
         >
           &lt;
         </button>
-        <h2 className="font-serif text-lg text-stone-900">{formatMonthYear(monthDate)}</h2>
+        <h2 className="font-serif text-lg text-stone-900 dark:text-stone-100">
+          {formatMonthYear(monthDate)}
+        </h2>
         <button
           onClick={onNextMonth}
           aria-label="Next month"
-          className="rounded-md px-2 py-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700"
+          className="rounded-md px-2 py-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700 dark:text-stone-500 dark:hover:bg-stone-900 dark:hover:text-stone-200"
         >
           &gt;
         </button>
@@ -46,7 +48,7 @@ export function Calendar({
         {WEEKDAY_LABELS.map((label) => (
           <div
             key={label}
-            className="pb-2 text-xs font-medium tracking-wide text-stone-400 uppercase"
+            className="pb-2 text-xs font-medium tracking-wide text-stone-400 uppercase dark:text-stone-500"
           >
             {label}
           </div>
@@ -64,14 +66,20 @@ export function Calendar({
               key={dateKey}
               onClick={() => onSelectDate(dateKey)}
               className={`relative mx-auto flex size-9 flex-col items-center justify-center rounded-full text-sm transition-colors sm:size-10 ${
-                !inMonth ? 'text-stone-300' : 'text-stone-700'
-              } ${isSelected ? 'bg-stone-900 text-white' : isToday ? 'ring-1 ring-stone-900' : 'hover:bg-stone-100'}`}
+                !inMonth ? 'text-stone-300 dark:text-stone-700' : 'text-stone-700 dark:text-stone-300'
+              } ${
+                isSelected
+                  ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900'
+                  : isToday
+                    ? 'ring-1 ring-stone-900 dark:ring-stone-100'
+                    : 'hover:bg-stone-100 dark:hover:bg-stone-900'
+              }`}
             >
               {date.getDate()}
               {hasEntry && (
                 <span
                   className={`absolute bottom-1.5 h-1 w-1 rounded-full ${
-                    isSelected ? 'bg-white' : 'bg-stone-500'
+                    isSelected ? 'bg-white dark:bg-stone-900' : 'bg-stone-500 dark:bg-stone-400'
                   }`}
                 />
               )}
