@@ -1,14 +1,21 @@
 import { useEffect, useRef } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { ThemeToggle } from '../components/ThemeToggle'
+import {
+  ArchiveIcon,
+  JournalIcon,
+  OverviewIcon,
+  PursuitsIcon,
+  SearchIcon,
+} from '../components/NavIcons'
 import { supabase } from '../lib/supabase/client'
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Journal', end: true },
-  { to: '/pursuits', label: 'Pursuits', end: false },
-  { to: '/overview', label: 'Overview', end: false },
-  { to: '/archive', label: 'Archive', end: false },
-  { to: '/search', label: 'Search', end: false },
+  { to: '/', label: 'Journal', end: true, icon: JournalIcon },
+  { to: '/pursuits', label: 'Pursuits', end: false, icon: PursuitsIcon },
+  { to: '/overview', label: 'Overview', end: false, icon: OverviewIcon },
+  { to: '/archive', label: 'Archive', end: false, icon: ArchiveIcon },
+  { to: '/search', label: 'Search', end: false, icon: SearchIcon },
 ]
 
 // The Journal page hosts the rich-text editor and the Archive page hosts a
@@ -46,15 +53,18 @@ export function AppLayout() {
               key={item.to}
               to={item.to}
               end={item.end}
+              aria-label={item.label}
+              title={item.label}
               className={({ isActive }) =>
-                `shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors ${
+                `flex shrink-0 items-center justify-center rounded-full px-3 py-2 text-sm font-medium transition-colors sm:px-3.5 sm:py-1.5 ${
                   isActive
                     ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900'
                     : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-900 dark:hover:text-stone-100'
                 }`
               }
             >
-              {item.label}
+              <item.icon className="size-5 sm:hidden" />
+              <span className="hidden sm:inline">{item.label}</span>
             </NavLink>
           ))}
         </nav>
